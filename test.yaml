@@ -1,0 +1,21 @@
+blueprint:
+  name: test script
+  description: >-
+    test script
+  domain: script
+  input:
+    selected_entity:
+      name: Lights
+      description: Lights to turn off.
+      selector:
+        target:
+          entity:
+            domain: light
+        action:
+
+mode: restart
+
+sequence:
+  - service: light.toggle
+    target: !input selected_entity
+ 

@@ -119,7 +119,8 @@ sequence:
       value_template: "{{ turn_on == true }}"
     sequence:
       - service: lifx.set_state
-        target: !input selected_entities
+        target: 
+          entity_id: "{{lights}}"
         data_template: >
           power: true
           brightness_pct: >
@@ -172,7 +173,8 @@ sequence:
       value_template: "{{ turn_on == false }}"
   sequence:
       - service: lifx.set_state
-        target: !input selected_entities
+        target: 
+          entity_id: "{{lights}}"
         data_template: >
           brightness_pct: >
             {% if (scene == 'Morning') %}

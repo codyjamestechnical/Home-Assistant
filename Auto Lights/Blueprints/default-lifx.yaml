@@ -11,136 +11,114 @@ blueprint:
         target:
           entity:
             domain: lifx
-    scene:
-      name: "Scene to Set"
-      description: "The scene to set in the room."
-      required: true
-      default: "Morning"
-      example: "Morning"
-      advanced: false
-      selector:
-        select:
-          options:
-            - "Morning"
-            - "Evening"
-            - "Night"
-            - "Bed Stage One"
-            - "Bed Stage Two"
-            - "Bed Stage Three"
-    ease:
-      name: "Ease Lights to New Scene"
-      description: "Ease the lights to the new scene over a few minutes."
-      required: false
-      default: false
-      example: "false"
-      advanced: false
-      selector:
-        boolean:
-    turn_on:
-      name: "Turn On Lights"
-      description: "Turn on the lights when setting values"
-      required: true
-      default: true
-      example: 'true'
-      selector:
-        boolean:
     brightness_morning:
       name: Morning Brightness
       description: The brightness percentage to set the lights to
-      default: 100
-      example: "50"
     brightness_eventing:
       name: Eventing Brightness
       description: The brightness percentage to set the lights to
-      default: 100
-      example: 50
     brightness_night:
       name: Night Brightness
       description: The brightness percentage to set the lights to
-      default: 100
-      example: "50"
     brightness_bs1:
       name: Bed Stage One Brightness
       description: The brightness percentage to set the lights to
-      default: 50
-      example: "50"
     brightness_bs2:
       name: Bed Stage Two Brightness
       description: The brightness percentage to set the lights to
-      default: 25
-      example: "50"
     brightness_bs3:
       name: Bed Stage Three Brightness
       description: The brightness percentage to set the lights to
-      default: 1
-      example: "50"
     kelvin_morning:
       name: Morning kelvin
       description: The kelvin to set the lights to
-      default: 9000
-      example: "50"
     kelvin_eventing:
       name: Eventing kelvin
       description: The kelvin to set the lights to
-      default: 4000
-      example: "50"
     kelvin_night:
       name: Night kelvin
       description: The kelvin to set the lights to
-      default: 2500
-      example: "50"
     kelvin_bs1:
       name: Bed Stage One kelvin
       description: The kelvin to set the lights to
-      default: 1900
-      example: "50"
     kelvin_bs2:
       name: Bed Stage Two kelvin
       description: The kelvin to set the lights to
-      default: 1900
-      example: "50"
     kelvin_bs3:
       name: Bed Stage Three kelvin
       description: The kelvin to set the lights to
-      default: 1500
-      example: "50"
     transition_default:
       name: Default Transition
       description: The default transition
-      default: 1
-      example: "5"
     transition_morning:
       name: Morning transition
       description: The transition to set the lights to
-      default: 600
-      example: "50"
     transition_eventing:
       name: Eventing transition
       description: The transition to set the lights to
-      default: 120
-      example: "50"
     transition_night:
       name: Night transition
       description: The transition to set the lights to
-      default: 300
-      example: "50"
     transition_bs1:
       name: Bed Stage One transition
       description: The transition to set the lights to
-      default: 300
-      example: "50"
     transition_bs2:
       name: Bed Stage Two transition
       description: The transition to set the lights to
-      default: 300
-      example: "50"
     transition_bs3:
       name: Bed Stage Three transition
       description: The transition to set the lights to
-      default: 300
-      example: "50"
     
 mode: parallel
+variables:
+  ease: false
+  scene: 
+  lights:
+  turn_on: true
+fields:
+  scene:
+    name: "Scene to Set"
+    description: "The scene to set in the room."
+    required: true
+    default: "Morning"
+    example: "Morning"
+    advanced: false
+    selector:
+      select:
+        options:
+          - "Morning"
+          - "Evening"
+          - "Night"
+          - "Bed Stage One"
+          - "Bed Stage Two"
+          - "Bed Stage Three"
+  ease:
+    name: "Ease Lights to New Scene"
+    description: "Ease the lights to the new scene over a few minutes."
+    required: false
+    default: false
+    example: "false"
+    advanced: false
+    selector:
+      boolean:
+  lights:
+    name: "Lights to change"
+    description: "List of lights to set in this operation"
+    required: true
+    default: ''
+    example: "light.kitchen_lights"
+    advanced: false
+    selector:
+      entity:
+
+  turn_on:
+    name: "Turn On Lights"
+    description: "Turn on the lights when setting values"
+    required: true
+    default: true
+    example: 'true'
+    selector:
+      boolean:
 sequence:
 - choose:
   - conditions:

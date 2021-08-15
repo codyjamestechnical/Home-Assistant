@@ -48,7 +48,7 @@ blueprint:
       name: Morning Brightness
       description: The brightness percentage to set the lights to
       default: 100
-      example: 50
+      example: "50"
     brightness_eventing:
       name: Eventing Brightness
       description: The brightness percentage to set the lights to
@@ -58,87 +58,87 @@ blueprint:
       name: Night Brightness
       description: The brightness percentage to set the lights to
       default: 100
-      example: 50
+      example: "50"
     brightness_bs1:
       name: Bed Stage One Brightness
       description: The brightness percentage to set the lights to
       default: 50
-      example: 50
+      example: "50"
     brightness_bs2:
       name: Bed Stage Two Brightness
       description: The brightness percentage to set the lights to
       default: 25
-      example: 50
+      example: "50"
     brightness_bs3:
       name: Bed Stage Three Brightness
       description: The brightness percentage to set the lights to
       default: 1
-      example: 50
+      example: "50"
     kelvin_morning:
       name: Morning kelvin
       description: The kelvin to set the lights to
-      default: 100
-      example: 50
+      default: 9000
+      example: "50"
     kelvin_eventing:
       name: Eventing kelvin
       description: The kelvin to set the lights to
-      default: 100
-      example: 50
+      default: 4000
+      example: "50"
     kelvin_night:
       name: Night kelvin
       description: The kelvin to set the lights to
-      default: 100
-      example: 50
+      default: 2500
+      example: "50"
     kelvin_bs1:
       name: Bed Stage One kelvin
       description: The kelvin to set the lights to
-      default: 50
-      example: 50
+      default: 1900
+      example: "50"
     kelvin_bs2:
       name: Bed Stage Two kelvin
       description: The kelvin to set the lights to
-      default: 25
-      example: 50
+      default: 1900
+      example: "50"
     kelvin_bs3:
       name: Bed Stage Three kelvin
       description: The kelvin to set the lights to
-      default: 1
-      example: 50
+      default: 1500
+      example: "50"
     transition_default:
       name: Default Transition
       description: The default transition
       default: 1
-      example: 5
+      example: "5"
     transition_morning:
       name: Morning transition
       description: The transition to set the lights to
       default: 600
-      example: 50
+      example: "50"
     transition_eventing:
       name: Eventing transition
       description: The transition to set the lights to
       default: 120
-      example: 50
+      example: "50"
     transition_night:
       name: Night transition
       description: The transition to set the lights to
       default: 300
-      example: 50
+      example: "50"
     transition_bs1:
       name: Bed Stage One transition
       description: The transition to set the lights to
       default: 300
-      example: 50
+      example: "50"
     transition_bs2:
       name: Bed Stage Two transition
       description: The transition to set the lights to
       default: 300
-      example: 50
+      example: "50"
     transition_bs3:
       name: Bed Stage Three transition
       description: The transition to set the lights to
       default: 300
-      example: 50
+      example: "50"
     
 mode: parallel
 sequence:

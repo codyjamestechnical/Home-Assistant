@@ -4,17 +4,10 @@ blueprint:
     Set lifx lights to default settings
   domain: script
   input:
-    selected_entities:
-      name: Lights
-      description: list of Lifx lights.
-      selector:
-        target:
-          entity:
-            domain: lifx
     brightness_morning:
       name: Morning Brightness
       description: The brightness percentage to set the lights to
-    brightness_eventing:
+    brightness_evening:
       name: Eventing Brightness
       description: The brightness percentage to set the lights to
     brightness_night:
@@ -32,7 +25,7 @@ blueprint:
     kelvin_morning:
       name: Morning kelvin
       description: The kelvin to set the lights to
-    kelvin_eventing:
+    kelvin_evening:
       name: Eventing kelvin
       description: The kelvin to set the lights to
     kelvin_night:
@@ -53,7 +46,7 @@ blueprint:
     transition_morning:
       name: Morning transition
       description: The transition to set the lights to
-    transition_eventing:
+    transition_evening:
       name: Eventing transition
       description: The transition to set the lights to
     transition_night:

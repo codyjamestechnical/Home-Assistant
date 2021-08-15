@@ -1,0 +1,13 @@
+blueprint:
+  name: Lifx Set Default Blueprint
+  description: >-
+    Set lifx lights to default settings
+  domain: script
+  input:
+    selected_entity:
+      name: Lights
+      description: list of Lifx lights.
+      selector:
+        target:
+          entity:
+            domain: lifx

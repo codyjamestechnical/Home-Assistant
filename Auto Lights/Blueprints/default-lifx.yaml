@@ -68,6 +68,7 @@ variables:
   scene: 
   lights:
   turn_on: true
+  var_brightness_morning: !input brightness_morning
 fields:
   scene:
     name: "Scene to Set"
@@ -124,7 +125,7 @@ sequence:
           power: true
           brightness_pct: >
             {% if (scene == 'Morning') %}
-            {{brightness_morning}}
+            {{var_brightness_morning}}
             {% elif (scene == 'Evening') %}
             100
             {% elif (scene == 'Night') %}

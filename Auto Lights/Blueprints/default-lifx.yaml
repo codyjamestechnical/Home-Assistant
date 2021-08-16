@@ -68,7 +68,25 @@ variables:
   scene: 
   lights:
   turn_on: true
-  var_brightness_morning: !input brightness_morning
+  brightness_morning: !input 'brightness_morning'
+  brightness_evening: !input 'brightness_evening'
+  brightness_night: !input 'brightness_night'
+  brightness_bs1: !input 'brightness_bs1'
+  brightness_bs2: !input 'brightness_bs2'
+  brightness_bs3: !input 'brightness_bs3'
+  kelvin_morning: !input 'kelvin_morning'
+  kelvin_evening: !input 'kelvin_evening'
+  kelvin_night: !input 'kelvin_night'
+  kelvin_bs1: !input 'kelvin_bs1'
+  kelvin_bs2: !input 'kelvin_bs2'
+  kelvin_bs3: !input 'kelvin_bs3'
+  transition_default: !input 'transition_default'
+  transition_morning: !input 'transition_morning'
+  transition_evening: !input 'transition_evening'
+  transition_night: !input 'transition_night'
+  transition_bs1: !input 'transition_bs1'
+  transition_bs2: !input 'transition_bs2'
+  transition_bs3: !input 'transition_bs3'
 fields:
   scene:
     name: "Scene to Set"
@@ -125,47 +143,47 @@ sequence:
           power: true
           brightness_pct: >
             {% if (scene == 'Morning') %}
-            {{var_brightness_morning}}
+            {{brightness_morning}}
             {% elif (scene == 'Evening') %}
-            100
+            {{brightness_evening}}
             {% elif (scene == 'Night') %}
-            100
+            {{brightness_night}}
             {% elif (scene == 'Bed Stage One') %}
-            50
+            {{brightness_bs1}}
             {% elif (scene == 'Bed Stage Two') %}
-            25
+            {{brightness_bs2}}
             {% elif (scene == 'Bed Stage Three') %}
-            1
+            {{brightness_bs3}}
             {% endif %}
           kelvin: >
             {% if (scene == 'Morning') %}
-            9000
+            {{kelving_morning}}
             {% elif (scene == 'Evening') %}
-            4000
+            {{kelvin_evening}}
             {% elif (scene == 'Night') %}
-            2500
+            {{kelvin_night}}
             {% elif (scene == 'Bed Stage One') %}
-            1900
+            {{kelvin_bs1}}
             {% elif (scene == 'Bed Stage Two') %}
-            1900
+            {{kelvin_bs2}}
             {% elif (scene == 'Bed Stage Three') %}
-            1500
+            {{kelvin_bs3}}
             {% endif %}
           transition: >
             {% if (ease is not defined) or (ease == false) %}
-            1
+            {{transition_default}}
             {% elif (ease == true) and (scene == 'Morning') %}
-            600
+            {{transition_morning}}
             {% elif (ease == true) and (scene == 'Evening') %}
-            120
+            {{transition_evening}}
             {% elif (ease == true) and (scene == 'Night') %}
-            300
+            {{transition_night}}
             {% elif (ease == true) and (scene == 'Bed Stage One') %}
-            300
+            {{transition_bs1}}
             {% elif (ease == true) and (scene == 'Bed Stage Two') %}
-            300
+            {{transition_bs2}}
             {% elif (ease == true) and (scene == 'Bed Stage Three') %}
-            300
+            {{transition_bs3}}
             {% endif %}
 
   - conditions:
@@ -176,47 +194,47 @@ sequence:
           target: 
             entity_id: "{{lights}}"
           data_template:
-            brightness_pct: >
-              {% if (scene == 'Morning') %}
-              100
-              {% elif (scene == 'Evening') %}
-              100
-              {% elif (scene == 'Night') %}
-              100
-              {% elif (scene == 'Bed Stage One') %}
-              50
-              {% elif (scene == 'Bed Stage Two') %}
-              25
-              {% elif (scene == 'Bed Stage Three') %}
-              1
-              {% endif %}
-            kelvin: >
-              {% if (scene == 'Morning') %}
-              9000
-              {% elif (scene == 'Evening') %}
-              4000
-              {% elif (scene == 'Night') %}
-              2500
-              {% elif (scene == 'Bed Stage One') %}
-              1900
-              {% elif (scene == 'Bed Stage Two') %}
-              1900
-              {% elif (scene == 'Bed Stage Three') %}
-              1500
-              {% endif %}
-            transition: >
-              {% if (ease is not defined) or (ease == false) %}
-              1
-              {% elif (ease == true) and (scene == 'Morning') %}
-              600
-              {% elif (ease == true) and (scene == 'Evening') %}
-              120
-              {% elif (ease == true) and (scene == 'Night') %}
-              300
-              {% elif (ease == true) and (scene == 'Bed Stage One') %}
-              300
-              {% elif (ease == true) and (scene == 'Bed Stage Two') %}
-              300
-              {% elif (ease == true) and (scene == 'Bed Stage Three') %}
-              300
-              {% endif %}
+          brightness_pct: >
+            {% if (scene == 'Morning') %}
+            {{brightness_morning}}
+            {% elif (scene == 'Evening') %}
+            {{brightness_evening}}
+            {% elif (scene == 'Night') %}
+            {{brightness_night}}
+            {% elif (scene == 'Bed Stage One') %}
+            {{brightness_bs1}}
+            {% elif (scene == 'Bed Stage Two') %}
+            {{brightness_bs2}}
+            {% elif (scene == 'Bed Stage Three') %}
+            {{brightness_bs3}}
+            {% endif %}
+          kelvin: >
+            {% if (scene == 'Morning') %}
+            {{kelving_morning}}
+            {% elif (scene == 'Evening') %}
+            {{kelvin_evening}}
+            {% elif (scene == 'Night') %}
+            {{kelvin_night}}
+            {% elif (scene == 'Bed Stage One') %}
+            {{kelvin_bs1}}
+            {% elif (scene == 'Bed Stage Two') %}
+            {{kelvin_bs2}}
+            {% elif (scene == 'Bed Stage Three') %}
+            {{kelvin_bs3}}
+            {% endif %}
+          transition: >
+            {% if (ease is not defined) or (ease == false) %}
+            {{transition_default}}
+            {% elif (ease == true) and (scene == 'Morning') %}
+            {{transition_morning}}
+            {% elif (ease == true) and (scene == 'Evening') %}
+            {{transition_evening}}
+            {% elif (ease == true) and (scene == 'Night') %}
+            {{transition_night}}
+            {% elif (ease == true) and (scene == 'Bed Stage One') %}
+            {{transition_bs1}}
+            {% elif (ease == true) and (scene == 'Bed Stage Two') %}
+            {{transition_bs2}}
+            {% elif (ease == true) and (scene == 'Bed Stage Three') %}
+            {{transition_bs3}}
+            {% endif %}

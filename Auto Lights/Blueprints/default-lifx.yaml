@@ -103,7 +103,6 @@ fields:
     advanced: false
     selector:
       entity:
-
   turn_on:
     name: "Turn On Lights"
     description: "Turn on the lights when setting values"
@@ -125,7 +124,7 @@ sequence:
           power: true
           brightness_pct: >
             {% if (scene == 'Morning') %}
-            100
+            {{brightness_morning}}
             {% elif (scene == 'Evening') %}
             100
             {% elif (scene == 'Night') %}

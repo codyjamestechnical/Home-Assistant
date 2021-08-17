@@ -7,60 +7,155 @@ blueprint:
     brightness_morning:
       name: Morning Brightness
       description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
     brightness_evening:
       name: Eventing Brightness
       description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
     brightness_night:
       name: Night Brightness
       description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
     brightness_bs1:
       name: Bed Stage One Brightness
       description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
     brightness_bs2:
       name: Bed Stage Two Brightness
       description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
     brightness_bs3:
       name: Bed Stage Three Brightness
       description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
     kelvin_morning:
-      name: Morning kelvin
+      name: Morning Kelvin
       description: The kelvin to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Kelvin"
     kelvin_evening:
-      name: Eventing kelvin
+      name: Eventing Kelvin
       description: The kelvin to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Kelvin"
     kelvin_night:
-      name: Night kelvin
+      name: Night Kelvin
       description: The kelvin to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Kelvin"
     kelvin_bs1:
-      name: Bed Stage One kelvin
+      name: Bed Stage One Kelvin
       description: The kelvin to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Kelvin"
     kelvin_bs2:
-      name: Bed Stage Two kelvin
+      name: Bed Stage Two Kelvin
       description: The kelvin to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Kelvin"
     kelvin_bs3:
-      name: Bed Stage Three kelvin
+      name: Bed Stage Three Kelvin
       description: The kelvin to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Kelvin"
     transition_default:
       name: Default Transition
       description: The default transition
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     transition_morning:
       name: Morning transition
       description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     transition_evening:
       name: Eventing transition
       description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     transition_night:
       name: Night transition
       description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     transition_bs1:
       name: Bed Stage One transition
       description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     transition_bs2:
       name: Bed Stage Two transition
       description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     transition_bs3:
       name: Bed Stage Three transition
       description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
     
 mode: parallel
 variables:
@@ -80,7 +175,7 @@ variables:
   kelvin_bs1: !input 'kelvin_bs1'
   kelvin_bs2: !input 'kelvin_bs2'
   kelvin_bs3: !input 'kelvin_bs3'
-  transition_default: !input 'transition_default'
+  transition: !input 'transition_default'
   transition_morning: !input 'transition_morning'
   transition_evening: !input 'transition_evening'
   transition_night: !input 'transition_night'
@@ -170,8 +265,8 @@ sequence:
             {{kelvin_bs3}}
             {% endif %}
           transition: >
-            {% if (ease is not defined) or (ease == false) %}
-            {{transition_default}}
+            {% if (ease == false) %}
+            {{transition}}
             {% elif (ease == true) and (scene == 'Morning') %}
             {{transition_morning}}
             {% elif (ease == true) and (scene == 'Evening') %}
@@ -223,8 +318,8 @@ sequence:
             {{kelvin_bs3}}
             {% endif %}
           transition: >
-            {% if (ease is not defined) or (ease == false) %}
-            {{transition_default}}
+            {% if (ease == false) %}
+            {{transition}}
             {% elif (ease == true) and (scene == 'Morning') %}
             {{transition_morning}}
             {% elif (ease == true) and (scene == 'Evening') %}

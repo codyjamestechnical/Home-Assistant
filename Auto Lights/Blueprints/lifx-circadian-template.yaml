@@ -255,7 +255,7 @@ sequence:
               {% endif %}
             kelvin: >
               {% if (scene == 'Morning') %}
-              {{kelving_morning}}
+              {{kelvin_morning}}
               {% elif (scene == 'Evening') %}
               {{kelvin_evening}}
               {% elif (scene == 'Night') %}

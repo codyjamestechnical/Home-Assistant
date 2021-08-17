@@ -162,7 +162,6 @@ variables:
   ease: false
   scene: 
   lights:
-  turn_on: true
   brightness_morning: !input 'brightness_morning'
   brightness_evening: !input 'brightness_evening'
   brightness_night: !input 'brightness_night'
@@ -217,20 +216,11 @@ fields:
     advanced: false
     selector:
       entity:
-  turn_on:
-    name: "Turn On Lights"
-    description: "Turn on the lights when setting values"
-    required: true
-    default: true
-    example: 'true'
-    selector:
-      boolean:
 sequence:
   - service: light.turn_on
     target: 
       entity_id: "{{lights}}"
     data_template:
-      power: true
       brightness_pct: >
         {% if (scene == 'Morning') %}
         {{brightness_morning}}
@@ -247,7 +237,7 @@ sequence:
         {% endif %}
       color_temp: >
         {% if (scene == 'Morning') %}
-        {{color_tempg_morning}}
+        {{color_temp_morning}}
         {% elif (scene == 'Evening') %}
         {{color_temp_evening}}
         {% elif (scene == 'Night') %}

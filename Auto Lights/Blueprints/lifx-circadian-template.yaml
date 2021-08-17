@@ -230,106 +230,106 @@ sequence:
     - conditions:
       - condition: template
         value_template: "{{ turn_on == true }}"
-        sequence:
-          - service: lifx.set_state
-            target: 
-              entity_id: "{{lights}}"
-            data_template:
-              power: true
-              brightness_pct: >
-                {% if (scene == 'Morning') %}
-                {{brightness_morning}}
-                {% elif (scene == 'Evening') %}
-                {{brightness_evening}}
-                {% elif (scene == 'Night') %}
-                {{brightness_night}}
-                {% elif (scene == 'Bed Stage One') %}
-                {{brightness_bs1}}
-                {% elif (scene == 'Bed Stage Two') %}
-                {{brightness_bs2}}
-                {% elif (scene == 'Bed Stage Three') %}
-                {{brightness_bs3}}
-                {% endif %}
-              kelvin: >
-                {% if (scene == 'Morning') %}
-                {{kelving_morning}}
-                {% elif (scene == 'Evening') %}
-                {{kelvin_evening}}
-                {% elif (scene == 'Night') %}
-                {{kelvin_night}}
-                {% elif (scene == 'Bed Stage One') %}
-                {{kelvin_bs1}}
-                {% elif (scene == 'Bed Stage Two') %}
-                {{kelvin_bs2}}
-                {% elif (scene == 'Bed Stage Three') %}
-                {{kelvin_bs3}}
-                {% endif %}
-              transition: >
-                {% if (ease == false) %}
-                {{transition}}
-                {% elif (ease == true) and (scene == 'Morning') %}
-                {{transition_morning}}
-                {% elif (ease == true) and (scene == 'Evening') %}
-                {{transition_evening}}
-                {% elif (ease == true) and (scene == 'Night') %}
-                {{transition_night}}
-                {% elif (ease == true) and (scene == 'Bed Stage One') %}
-                {{transition_bs1}}
-                {% elif (ease == true) and (scene == 'Bed Stage Two') %}
-                {{transition_bs2}}
-                {% elif (ease == true) and (scene == 'Bed Stage Three') %}
-                {{transition_bs3}}
-                {% endif %}
+      sequence:
+        - service: lifx.set_state
+          target: 
+            entity_id: "{{lights}}"
+          data_template:
+            power: true
+            brightness_pct: >
+              {% if (scene == 'Morning') %}
+              {{brightness_morning}}
+              {% elif (scene == 'Evening') %}
+              {{brightness_evening}}
+              {% elif (scene == 'Night') %}
+              {{brightness_night}}
+              {% elif (scene == 'Bed Stage One') %}
+              {{brightness_bs1}}
+              {% elif (scene == 'Bed Stage Two') %}
+              {{brightness_bs2}}
+              {% elif (scene == 'Bed Stage Three') %}
+              {{brightness_bs3}}
+              {% endif %}
+            kelvin: >
+              {% if (scene == 'Morning') %}
+              {{kelving_morning}}
+              {% elif (scene == 'Evening') %}
+              {{kelvin_evening}}
+              {% elif (scene == 'Night') %}
+              {{kelvin_night}}
+              {% elif (scene == 'Bed Stage One') %}
+              {{kelvin_bs1}}
+              {% elif (scene == 'Bed Stage Two') %}
+              {{kelvin_bs2}}
+              {% elif (scene == 'Bed Stage Three') %}
+              {{kelvin_bs3}}
+              {% endif %}
+            transition: >
+              {% if (ease == false) %}
+              {{transition}}
+              {% elif (ease == true) and (scene == 'Morning') %}
+              {{transition_morning}}
+              {% elif (ease == true) and (scene == 'Evening') %}
+              {{transition_evening}}
+              {% elif (ease == true) and (scene == 'Night') %}
+              {{transition_night}}
+              {% elif (ease == true) and (scene == 'Bed Stage One') %}
+              {{transition_bs1}}
+              {% elif (ease == true) and (scene == 'Bed Stage Two') %}
+              {{transition_bs2}}
+              {% elif (ease == true) and (scene == 'Bed Stage Three') %}
+              {{transition_bs3}}
+              {% endif %}
 
     - conditions:
       - condition: template
         value_template: "{{ turn_on == false }}"
-        sequence:
-          - service: lifx.set_state
-            target: 
-              entity_id: "{{lights}}"
-            data_template:
-              brightness_pct: >
-                {% if (scene == 'Morning') %}
-                {{brightness_morning}}
-                {% elif (scene == 'Evening') %}
-                {{brightness_evening}}
-                {% elif (scene == 'Night') %}
-                {{brightness_night}}
-                {% elif (scene == 'Bed Stage One') %}
-                {{brightness_bs1}}
-                {% elif (scene == 'Bed Stage Two') %}
-                {{brightness_bs2}}
-                {% elif (scene == 'Bed Stage Three') %}
-                {{brightness_bs3}}
-                {% endif %}
-              kelvin: >
-                {% if (scene == 'Morning') %}
-                {{kelving_morning}}
-                {% elif (scene == 'Evening') %}
-                {{kelvin_evening}}
-                {% elif (scene == 'Night') %}
-                {{kelvin_night}}
-                {% elif (scene == 'Bed Stage One') %}
-                {{kelvin_bs1}}
-                {% elif (scene == 'Bed Stage Two') %}
-                {{kelvin_bs2}}
-                {% elif (scene == 'Bed Stage Three') %}
-                {{kelvin_bs3}}
-                {% endif %}
-              transition: >
-                {% if (ease == false) %}
-                {{transition}}
-                {% elif (ease == true) and (scene == 'Morning') %}
-                {{transition_morning}}
-                {% elif (ease == true) and (scene == 'Evening') %}
-                {{transition_evening}}
-                {% elif (ease == true) and (scene == 'Night') %}
-                {{transition_night}}
-                {% elif (ease == true) and (scene == 'Bed Stage One') %}
-                {{transition_bs1}}
-                {% elif (ease == true) and (scene == 'Bed Stage Two') %}
-                {{transition_bs2}}
-                {% elif (ease == true) and (scene == 'Bed Stage Three') %}
-                {{transition_bs3}}
-                {% endif %}
+      sequence:
+        - service: lifx.set_state
+          target: 
+            entity_id: "{{lights}}"
+          data_template:
+            brightness_pct: >
+              {% if (scene == 'Morning') %}
+              {{brightness_morning}}
+              {% elif (scene == 'Evening') %}
+              {{brightness_evening}}
+              {% elif (scene == 'Night') %}
+              {{brightness_night}}
+              {% elif (scene == 'Bed Stage One') %}
+              {{brightness_bs1}}
+              {% elif (scene == 'Bed Stage Two') %}
+              {{brightness_bs2}}
+              {% elif (scene == 'Bed Stage Three') %}
+              {{brightness_bs3}}
+              {% endif %}
+            kelvin: >
+              {% if (scene == 'Morning') %}
+              {{kelving_morning}}
+              {% elif (scene == 'Evening') %}
+              {{kelvin_evening}}
+              {% elif (scene == 'Night') %}
+              {{kelvin_night}}
+              {% elif (scene == 'Bed Stage One') %}
+              {{kelvin_bs1}}
+              {% elif (scene == 'Bed Stage Two') %}
+              {{kelvin_bs2}}
+              {% elif (scene == 'Bed Stage Three') %}
+              {{kelvin_bs3}}
+              {% endif %}
+            transition: >
+              {% if (ease == false) %}
+              {{transition}}
+              {% elif (ease == true) and (scene == 'Morning') %}
+              {{transition_morning}}
+              {% elif (ease == true) and (scene == 'Evening') %}
+              {{transition_evening}}
+              {% elif (ease == true) and (scene == 'Night') %}
+              {{transition_night}}
+              {% elif (ease == true) and (scene == 'Bed Stage One') %}
+              {{transition_bs1}}
+              {% elif (ease == true) and (scene == 'Bed Stage Two') %}
+              {{transition_bs2}}
+              {% elif (ease == true) and (scene == 'Bed Stage Three') %}
+              {{transition_bs3}}
+              {% endif %}

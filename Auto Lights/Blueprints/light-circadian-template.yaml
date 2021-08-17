@@ -1,0 +1,277 @@
+blueprint:
+  name: Light Circadian Transition Blueprint
+  description: >-
+    Set lights to default settings
+  domain: script
+  input:
+    brightness_morning:
+      name: Morning Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    brightness_evening:
+      name: Eventing Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    brightness_night:
+      name: Night Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    brightness_bs1:
+      name: Bed Stage One Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    brightness_bs2:
+      name: Bed Stage Two Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    brightness_bs3:
+      name: Bed Stage Three Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    color_temp_morning:
+      name: Morning Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Mired"
+    color_temp_evening:
+      name: Eventing Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Mired"
+    color_temp_night:
+      name: Night Color Temperature
+      description: The color_temp to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Mired"
+    color_temp_bs1:
+      name: Bed Stage One Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Mired"
+    color_temp_bs2:
+      name: Bed Stage Two Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Mired"
+    color_temp_bs3:
+      name: Bed Stage Three Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500
+          max: 9000
+          unit_of_measurement: "Mired"
+    transition_default:
+      name: Default Transition
+      description: The default transition
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    transition_morning:
+      name: Morning transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    transition_evening:
+      name: Eventing transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    transition_night:
+      name: Night transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    transition_bs1:
+      name: Bed Stage One transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    transition_bs2:
+      name: Bed Stage Two transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    transition_bs3:
+      name: Bed Stage Three transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0
+          max: 1000
+          unit_of_measurement: "Seconds"
+    
+mode: parallel
+variables:
+  ease: false
+  scene: 
+  lights:
+  turn_on: true
+  brightness_morning: !input 'brightness_morning'
+  brightness_evening: !input 'brightness_evening'
+  brightness_night: !input 'brightness_night'
+  brightness_bs1: !input 'brightness_bs1'
+  brightness_bs2: !input 'brightness_bs2'
+  brightness_bs3: !input 'brightness_bs3'
+  color_temp_morning: !input 'color_temp_morning'
+  color_temp_evening: !input 'color_temp_evening'
+  color_temp_night: !input 'color_temp_night'
+  color_temp_bs1: !input 'color_temp_bs1'
+  color_temp_bs2: !input 'color_temp_bs2'
+  color_temp_bs3: !input 'color_temp_bs3'
+  transition: !input 'transition_default'
+  transition_morning: !input 'transition_morning'
+  transition_evening: !input 'transition_evening'
+  transition_night: !input 'transition_night'
+  transition_bs1: !input 'transition_bs1'
+  transition_bs2: !input 'transition_bs2'
+  transition_bs3: !input 'transition_bs3'
+fields:
+  scene:
+    name: "Scene to Set"
+    description: "The scene to set in the room."
+    required: true
+    default: "Morning"
+    example: "Morning"
+    advanced: false
+    selector:
+      select:
+        options:
+          - "Morning"
+          - "Evening"
+          - "Night"
+          - "Bed Stage One"
+          - "Bed Stage Two"
+          - "Bed Stage Three"
+  ease:
+    name: "Ease Lights to New Scene"
+    description: "Ease the lights to the new scene over a few minutes."
+    required: false
+    default: false
+    example: "false"
+    advanced: false
+    selector:
+      boolean:
+  lights:
+    name: "Lights to change"
+    description: "List of lights to set in this operation"
+    required: true
+    default: ''
+    example: "light.kitchen_lights"
+    advanced: false
+    selector:
+      entity:
+  turn_on:
+    name: "Turn On Lights"
+    description: "Turn on the lights when setting values"
+    required: true
+    default: true
+    example: 'true'
+    selector:
+      boolean:
+sequence:
+  - service: light.turn_on
+    target: 
+      entity_id: "{{lights}}"
+    data_template:
+      power: true
+      brightness_pct: >
+        {% if (scene == 'Morning') %}
+        {{brightness_morning}}
+        {% elif (scene == 'Evening') %}
+        {{brightness_evening}}
+        {% elif (scene == 'Night') %}
+        {{brightness_night}}
+        {% elif (scene == 'Bed Stage One') %}
+        {{brightness_bs1}}
+        {% elif (scene == 'Bed Stage Two') %}
+        {{brightness_bs2}}
+        {% elif (scene == 'Bed Stage Three') %}
+        {{brightness_bs3}}
+        {% endif %}
+      color_temp: >
+        {% if (scene == 'Morning') %}
+        {{color_tempg_morning}}
+        {% elif (scene == 'Evening') %}
+        {{color_temp_evening}}
+        {% elif (scene == 'Night') %}
+        {{color_temp_night}}
+        {% elif (scene == 'Bed Stage One') %}
+        {{color_temp_bs1}}
+        {% elif (scene == 'Bed Stage Two') %}
+        {{color_temp_bs2}}
+        {% elif (scene == 'Bed Stage Three') %}
+        {{color_temp_bs3}}
+        {% endif %}
+      transition: >
+        {% if (ease == false) %}
+        {{transition}}
+        {% elif (ease == true) and (scene == 'Morning') %}
+        {{transition_morning}}
+        {% elif (ease == true) and (scene == 'Evening') %}
+        {{transition_evening}}
+        {% elif (ease == true) and (scene == 'Night') %}
+        {{transition_night}}
+        {% elif (ease == true) and (scene == 'Bed Stage One') %}
+        {{transition_bs1}}
+        {% elif (ease == true) and (scene == 'Bed Stage Two') %}
+        {{transition_bs2}}
+        {% elif (ease == true) and (scene == 'Bed Stage Three') %}
+        {{transition_bs3}}
+        {% endif %}

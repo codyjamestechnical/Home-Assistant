@@ -1,5 +1,8 @@
+# This is a script to change the lighting throughout the day and initialize rooms to
+# a specific setting. This is a specific one for Lifx because they support changing state while not turning on the light. 
+# This goes with a package 
 blueprint:
-  name: Lifx Set Default Blueprint
+  name: Lifx Circadian Transition Blueprint
   description: >-
     Set lifx lights to default settings
   domain: script

@@ -1,0 +1,289 @@
+blueprint:
+  name: Light Circadian Transition XY_Color Blueprint
+  description: Set lights to default settings using xy_color
+  domain: script
+  input:
+    lights:
+      name: Lights
+      default: {}
+      selector:
+        entity:
+          domain: light
+    brightness_morning:
+      name: Morning Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    brightness_evening:
+      name: Eventing Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    brightness_night:
+      name: Night Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    brightness_bs1:
+      name: Bed Stage One Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    brightness_bs2:
+      name: Bed Stage Two Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    brightness_bs3:
+      name: Bed Stage Three Brightness
+      description: The brightness percentage to set the lights to
+      selector:
+        number:
+          min: 1.0
+          max: 100.0
+          unit_of_measurement: '%'
+          step: 1.0
+          mode: slider
+    color_xy_morning:
+      name: Morning Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500.0
+          max: 9000.0
+          unit_of_measurement: Mired
+          step: 1.0
+          mode: slider
+    color_xy_evening:
+      name: Eventing Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500.0
+          max: 9000.0
+          unit_of_measurement: Mired
+          step: 1.0
+          mode: slider
+    color_xy_night:
+      name: Night Color Temperature
+      description: The color_temp to set the lights to
+      selector:
+        number:
+          min: 1500.0
+          max: 9000.0
+          unit_of_measurement: Mired
+          step: 1.0
+          mode: slider
+    color_xy_bs1:
+      name: Bed Stage One Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500.0
+          max: 9000.0
+          unit_of_measurement: Mired
+          step: 1.0
+          mode: slider
+    color_xy_bs2:
+      name: Bed Stage Two Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500.0
+          max: 9000.0
+          unit_of_measurement: Mired
+          step: 1.0
+          mode: slider
+    color_xy_bs3:
+      name: Bed Stage Three Color Temperature
+      description: The color temp to set the lights to
+      selector:
+        number:
+          min: 1500.0
+          max: 9000.0
+          unit_of_measurement: Mired
+          step: 1.0
+          mode: slider
+    transition_default:
+      name: Default Transition
+      description: The default transition
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+    transition_morning:
+      name: Morning transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+    transition_evening:
+      name: Eventing transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+    transition_night:
+      name: Night transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+    transition_bs1:
+      name: Bed Stage One transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+    transition_bs2:
+      name: Bed Stage Two transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+    transition_bs3:
+      name: Bed Stage Three transition
+      description: The transition to set the lights to
+      selector:
+        number:
+          min: 0.0
+          max: 1000.0
+          unit_of_measurement: Seconds
+          step: 1.0
+          mode: slider
+mode: parallel
+variables:
+  ease: false
+  scene:
+  lights: !input 'lights'
+  brightness_morning: !input 'brightness_morning'
+  brightness_evening: !input 'brightness_evening'
+  brightness_night: !input 'brightness_night'
+  brightness_bs1: !input 'brightness_bs1'
+  brightness_bs2: !input 'brightness_bs2'
+  brightness_bs3: !input 'brightness_bs3'
+  color_xy_morning: !input 'color_xy_morning'
+  color_xy_evening: !input 'color_xy_evening'
+  color_xy_night: !input 'color_xy_night'
+  color_xy_bs1: !input 'color_xy_bs1'
+  color_xy_bs2: !input 'color_xy_bs2'
+  color_xy_bs3: !input 'color_xy_bs3'
+  transition: !input 'transition_default'
+  transition_morning: !input 'transition_morning'
+  transition_evening: !input 'transition_evening'
+  transition_night: !input 'transition_night'
+  transition_bs1: !input 'transition_bs1'
+  transition_bs2: !input 'transition_bs2'
+  transition_bs3: !input 'transition_bs3'
+fields:
+  scene:
+    name: Scene to Set
+    description: The scene to set in the room.
+    required: true
+    default: Morning
+    example: Morning
+    advanced: false
+    selector:
+      select:
+        options:
+        - Morning
+        - Evening
+        - Night
+        - Bed Stage One
+        - Bed Stage Two
+        - Bed Stage Three
+  ease:
+    name: Ease Lights to New Scene
+    description: Ease the lights to the new scene over a few minutes.
+    required: false
+    default: false
+    example: 'false'
+    advanced: false
+    selector:
+      boolean:
+  lights:
+    name: Lights to change
+    description: List of lights to set in this operation
+    required: true
+    example: light.kitchen_lights
+    advanced: false
+    selector:
+        target:
+          entity:
+            domain: light
+sequence:
+- service: light.turn_on
+  target:
+    entity_id: '{{lights}}'
+  data_template:
+    brightness_pct: '{% if (scene == ''Morning'') %} {{brightness_morning}} {% elif
+      (scene == ''Evening'') %} {{brightness_evening}} {% elif (scene == ''Night'')
+      %} {{brightness_night}} {% elif (scene == ''Bed Stage One'') %} {{brightness_bs1}}
+      {% elif (scene == ''Bed Stage Two'') %} {{brightness_bs2}} {% elif (scene ==
+      ''Bed Stage Three'') %} {{brightness_bs3}} {% endif %}
+
+      '
+    color_temp: '{% if (scene == ''Morning'') %} {{color_xy_morning}} {% elif (scene
+      == ''Evening'') %} {{color_xy_evening}} {% elif (scene == ''Night'') %} {{color_xy_night}}
+      {% elif (scene == ''Bed Stage One'') %} {{color_xy_bs1}} {% elif (scene ==
+      ''Bed Stage Two'') %} {{color_xy_bs2}} {% elif (scene == ''Bed Stage Three'')
+      %} {{color_xy_bs3}} {% endif %}
+
+      '
+    transition: '{% if (ease == false) %} {{transition}} {% elif (ease == true) and
+      (scene == ''Morning'') %} {{transition_morning}} {% elif (ease == true) and
+      (scene == ''Evening'') %} {{transition_evening}} {% elif (ease == true) and
+      (scene == ''Night'') %} {{transition_night}} {% elif (ease == true) and (scene
+      == ''Bed Stage One'') %} {{transition_bs1}} {% elif (ease == true) and (scene
+      == ''Bed Stage Two'') %} {{transition_bs2}} {% elif (ease == true) and (scene
+      == ''Bed Stage Three'') %} {{transition_bs3}} {% endif %}
+
+      '

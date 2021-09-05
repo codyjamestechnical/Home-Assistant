@@ -271,7 +271,7 @@ sequence:
       ''Bed Stage Three'') %} {{brightness_bs3}} {% endif %}
 
       '
-    color_temp: '{% if (scene == ''Morning'') %} {{color_xy_morning}} {% elif (scene
+    xy_color: '{% if (scene == ''Morning'') %} {{color_xy_morning}} {% elif (scene
       == ''Evening'') %} {{color_xy_evening}} {% elif (scene == ''Night'') %} {{color_xy_night}}
       {% elif (scene == ''Bed Stage One'') %} {{color_xy_bs1}} {% elif (scene ==
       ''Bed Stage Two'') %} {{color_xy_bs2}} {% elif (scene == ''Bed Stage Three'')

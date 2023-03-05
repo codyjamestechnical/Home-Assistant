@@ -1,6 +1,6 @@
 blueprint:
-  name: Light Circadian Transition XY_Color Blueprint
-  description: Set lights to default settings using xy_color
+  name: Light Circadian Transition RGBW color Blueprint
+  description: Set lights to default settings using rgbw_color
   domain: script
   input:
     lights:

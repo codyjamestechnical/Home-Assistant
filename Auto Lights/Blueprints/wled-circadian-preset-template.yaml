@@ -4,7 +4,7 @@ blueprint:
   domain: script
   input:
     preset_select: 
-      name: Lights
+      name: Preset Select
       default: {}
       selector: 
         entity:

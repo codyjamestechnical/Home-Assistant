@@ -52,7 +52,7 @@ fields:
         entity:
           domain: input_select
 sequence:
-- service: input_select.select_option
+- service: select.select_option
   target: 
     entity_id: "{{preset_select}}"
   data_template:

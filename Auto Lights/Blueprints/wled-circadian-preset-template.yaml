@@ -1,0 +1,59 @@
+blueprint:
+  name: Light Circadian Transition WLED Preset
+  description: Set lights to default settings for time of day using WLED presets.
+  domain: script
+  input:
+    lights: 
+      name: Lights
+      default: {}
+      selector: 
+        entity:
+          domain: light
+mode: parallel
+variables:
+  ease: false
+  scene: 
+  lights: !input 'lights'
+
+fields:
+  scene:
+    name: Preset Name
+    description: The preset to set on the WLED light.
+    required: true
+    default: Morning
+    example: Morning
+    advanced: false
+    selector:
+      select:
+        options:
+        - Morning
+        - Evening
+        - Night
+        - Bed Stage One
+        - Bed Stage Two
+        - Bed Stage Three
+  ease:
+    name: Ease Into Scene
+    description: Ease the lights to the new scene over a few minutes.
+    required: true
+    default: false
+    example: "false"
+    advanced: false
+    selector:
+      boolean:
+  lights:
+    name: Lights 
+    description: List of lights to set preset
+    required: true
+    example: light.kitchen_lights
+    advanced: false
+    selector:
+      target:
+        entity:
+          domain: light
+sequence:
+- service: input_select.select_option
+  target: 
+    entity_id: "{{lights}}"
+  data_template:
+    option: "{{scene}}"

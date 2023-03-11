@@ -56,4 +56,9 @@ sequence:
   target: 
     entity_id: "{{preset_select}}"
   data_template:
-    option: "{{scene}}"
+    option: |
+      {% if ease and scene=="Morning" %}
+      {{scene}} Fade
+      {% else %}
+      {{scene}}
+      {% endif %}

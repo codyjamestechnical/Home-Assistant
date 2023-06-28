@@ -8,22 +8,19 @@ blueprint:
       description: The occupancy sensor to use for the room
       selector:
         entity:
-          filter:
-            domain: binary_sensor
-            device_class: occupancy
+          domain: binary_sensor
+          device_class: occupancy
     area:
       name: Area 
       description: The area to control
       selector:
         entity:
-          filter:
-            domain: light
+          domain: light
     script:
       name: Turn on script
       selector:
         entity:
-          filter:
-            domain: script
+          domain: script
 
 trigger:
   - platform: state

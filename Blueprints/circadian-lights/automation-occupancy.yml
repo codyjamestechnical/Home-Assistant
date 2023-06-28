@@ -50,4 +50,4 @@ action:
         sequence:
           - service: light.turn_off
             target:
-              area_id: "{{ area_id(!input area)}}"
+              area_id: !input area

@@ -14,8 +14,9 @@ blueprint:
       name: Area 
       description: The area to control
       selector:
-        entity:
-          domain: light
+        area:
+          entity:
+            domain: light
     script:
       name: Turn on script
       selector:

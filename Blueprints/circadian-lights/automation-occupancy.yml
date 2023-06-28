@@ -1,0 +1,51 @@
+blueprint:
+  name: Occupancy Light Control
+  description: Control room lights based on occupancy
+  domain: automation
+  input:
+    occupancy_sensor:
+      name: Occupancy Sensor
+      description: The occupancy sensor to use for the room
+      selector:
+        domain: binary_sensor
+        device_class: occupancy
+    area:
+      name: Area 
+      description: The area to control
+      selector:
+        entity:
+          domain: light
+    script:
+      name: Turn on script
+      selector:
+        entity:
+          domain: script
+
+trigger:
+  - platform: state
+    entity_id: !input occupancy_sensor
+    id: "detected"
+    from: 'off'
+    to: 'on'
+
+  - platform: state
+    entity_id: !input occupancy_sensor
+    id: "not_detected"
+    from: 'on'
+    to: 'off'
+
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: "detected"
+        sequence:
+          - service: script.turn_on
+            entity_id: !input script
+      - conditions:
+        - condition: trigger
+          id: "not_detected"
+        sequence:
+          - service: light.turn_off
+            target:
+              area_id: "{{ area_id(!input area)}}"

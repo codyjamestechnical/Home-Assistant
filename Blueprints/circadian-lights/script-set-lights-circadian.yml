@@ -142,4 +142,4 @@ variables:
     lifx_hue-gu10_brightness_bs2: 39
     lifx_hue-gu10_brightness_bs3: 1
 sequence:
-  - {{!input other_ations}}
+  "{{!input other_ations}}"

@@ -3,8 +3,70 @@ blueprint:
   description: "This script sets a group of lights to a set state based on the selected circadian scene."
   domain: script
   author: "Cody James"
-  
-  variables:
+
+  input:
+    lifx_color_1000_bulbs:
+      name: "LIFX Color 1000 Bulbs"
+      description: "Select the bulbs to effect."
+      selector:
+        entity:
+          domain: light
+        device:
+          filter:
+            - model: "LIFX A19"
+              integration: "LIFX"
+          multiple: true
+    lifx_br30_bulbs:
+      name: "LIFX BR30 Bulbs"
+      description: "Select the bulbs to effect."
+      selector:
+        entity:
+          domain: light
+        device:
+          filter:
+            - model: "LIFX BR30"
+              integration: "LIFX"
+          multiple: true
+
+    lifx_mini_color_bulbs:
+      name: "LIFX Mini Color Bulbs"
+      description: "Select the bulbs to effect."
+      selector:
+        entity:
+          domain: light
+        device:
+          filter:
+            - model: "LIFX Color"
+              integration: "LIFX"
+          multiple: true
+
+    lifx_mini_ctt_bulbs:
+      name: "LIFX Mini CTT Bulbs"
+      description: "Select the bulbs to effect."
+      selector:
+        entity:
+          domain: light
+        device:
+          filter:
+            - model: "LIFX Mini White to Warm"
+              integration: "LIFX"
+          multiple: true
+    hue_gu10_bulbs:
+      name: "Hue GU10 Bulbs"
+      description: "Select the bulbs to effect."
+      selector:
+        entity:
+          domain: light
+        device:
+          filter:
+            - model: "LTG001"
+              manufacturer: "Philips"
+          multiple: true
+    other_actions:
+      name: "Other Actions"
+      selector:
+        action:
+variables:
   ##### LIFX Color 1000 #####
     #Kelvin
     lifx_color-1000_kelvin_morning: 9000
@@ -89,69 +151,5 @@ blueprint:
     lifx_hue-gu10_brightness_bs1: 78
     lifx_hue-gu10_brightness_bs2: 39
     lifx_hue-gu10_brightness_bs3: 1
-
-  input:
-    lifx_color_1000_bulbs:
-      name: "LIFX Color 1000 Bulbs"
-      description: "Select the bulbs to effect."
-      selector:
-        entity:
-          domain: light
-        device:
-          filter:
-            - model: "LIFX A19"
-              integration: "LIFX"
-          multiple: true
-    lifx_br30_bulbs:
-      name: "LIFX BR30 Bulbs"
-      description: "Select the bulbs to effect."
-      selector:
-        entity:
-          domain: light
-        device:
-          filter:
-            - model: "LIFX BR30"
-              integration: "LIFX"
-          multiple: true
-
-    lifx_mini_color_bulbs:
-      name: "LIFX Mini Color Bulbs"
-      description: "Select the bulbs to effect."
-      selector:
-        entity:
-          domain: light
-        device:
-          filter:
-            - model: "LIFX Color"
-              integration: "LIFX"
-          multiple: true
-
-    lifx_mini_ctt_bulbs:
-      name: "LIFX Mini CTT Bulbs"
-      description: "Select the bulbs to effect."
-      selector:
-        entity:
-          domain: light
-        device:
-          filter:
-            - model: "LIFX Mini White to Warm"
-              integration: "LIFX"
-          multiple: true
-    hue_gu10_bulbs:
-      name: "Hue GU10 Bulbs"
-      description: "Select the bulbs to effect."
-      selector:
-        entity:
-          domain: light
-        device:
-          filter:
-            - model: "LTG001"
-              manufacturer: "Philips"
-          multiple: true
-    other_actions:
-      name: "Other Actions"
-      selector:
-        action:
-
 sequence:
   {{other_actions}}

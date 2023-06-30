@@ -151,4 +151,5 @@ variables:
     lifx_hue-gu10_brightness_bs1: 78
     lifx_hue-gu10_brightness_bs2: 39
     lifx_hue-gu10_brightness_bs3: 1
-
+sequence:
+  {{other_actions}}

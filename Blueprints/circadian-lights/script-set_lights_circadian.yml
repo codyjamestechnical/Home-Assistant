@@ -66,6 +66,89 @@ blueprint:
       name: "Other Actions"
       selector:
         action:
+variables:
+  ##### LIFX Color 1000 #####
+    #Kelvin
+    lifx_color-1000_kelvin_morning: 9000
+    lifx_color-1000_kelvin_eventing: 4000
+    lifx_color-1000_kelvin_night: 2500
+    lifx_color-1000_kelvin_bs1: 1900
+    lifx_color-1000_kelvin_bs2: 1900
+    lifx_color-1000_kelvin_bs3: 1500
 
-sequence:
-  {{other_actions}}
+    #Brightness
+    lifx_color-1000_brightness_morning: 80
+    lifx_color-1000_brightness_eventing: 80
+    lifx_color-1000_brightness_night: 60
+    lifx_color-1000_brightness_bs1: 30
+    lifx_color-1000_brightness_bs2: 10
+    lifx_color-1000_brightness_bs3: 1
+
+  ##### LIFX BR30 #####
+    #Kelvin
+    lifx_br30_kelvin_morning: 9000
+    lifx_br30_kelvin_eventing: 4000
+    lifx_br30_kelvin_night: 2500
+    lifx_br30_kelvin_bs1: 1900
+    lifx_br30_kelvin_bs2: 1900
+    lifx_br30_kelvin_bs3: 1500
+
+    #Brightness
+    lifx_br30_brightness_morning: 100
+    lifx_br30_brightness_eventing: 80
+    lifx_br30_brightness_night: 70
+    lifx_br30_brightness_bs1: 40
+    lifx_br30_brightness_bs2: 15
+    lifx_br30_brightness_bs3: 1
+
+  ##### LIFX Mini Color #####
+    #Kelvin
+    lifx_mini-color_kelvin_morning: 9000
+    lifx_mini-color_kelvin_eventing: 4000
+    lifx_mini-color_kelvin_night: 2500
+    lifx_mini-color_kelvin_bs1: 1900
+    lifx_mini-color_kelvin_bs2: 1900
+    lifx_mini-color_kelvin_bs3: 1500
+
+    #Brightness
+    lifx_mini-color_brightness_morning: 100
+    lifx_mini-color_brightness_eventing: 100
+    lifx_mini-color_brightness_night: 100
+    lifx_mini-color_brightness_bs1: 50
+    lifx_mini-color_brightness_bs2: 25
+    lifx_mini-color_brightness_bs3: 1
+
+  ##### LIFX Mini CTT #####
+    #Kelvin
+    lifx_mini-ctt_kelvin_morning: 5700
+    lifx_mini-ctt_kelvin_eventing: 4000
+    lifx_mini-ctt_kelvin_night: 3000
+    lifx_mini-ctt_kelvin_bs1: 2400
+    lifx_mini-ctt_kelvin_bs2: 2400
+    lifx_mini-ctt_kelvin_bs3: 2400
+
+    #Brightness
+    lifx_mini-ctt_brightness_morning: 100
+    lifx_mini-ctt_brightness_eventing: 100
+    lifx_mini-ctt_brightness_night: 100
+    lifx_mini-ctt_brightness_bs1: 60
+    lifx_mini-ctt_brightness_bs2: 30
+    lifx_mini-ctt_brightness_bs3: 1
+
+##### Philips Hue GU10 #####
+    #Kelvin
+    lifx_hue-gu10_kelvin_morning: 5700
+    lifx_hue-gu10_kelvin_eventing: 4000
+    lifx_hue-gu10_kelvin_night: 3000
+    lifx_hue-gu10_kelvin_bs1: 2400
+    lifx_hue-gu10_kelvin_bs2: 2400
+    lifx_hue-gu10_kelvin_bs3: 2400
+
+    #Brightness
+    lifx_hue-gu10_brightness_morning: 100
+    lifx_hue-gu10_brightness_eventing: 100
+    lifx_hue-gu10_brightness_night: 100
+    lifx_hue-gu10_brightness_bs1: 78
+    lifx_hue-gu10_brightness_bs2: 39
+    lifx_hue-gu10_brightness_bs3: 1
+

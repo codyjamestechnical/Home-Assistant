@@ -170,6 +170,41 @@ variables:
       "holiday": {{ selects.holiday | list }}
     }
 
+fields:
+  scene:
+    name: Scene to Set
+    description: The scene to set in the room.
+    required: false
+    advanced: true
+    selector:
+      select:
+        options:
+          - Morning
+          - Evening
+          - Night
+          - Bed Stage One
+          - Bed Stage Two
+          - Bed Stage Three
+
+  transition:
+    name: Transition Time in Seconds
+    default: 2
+    advanced: false
+    selector:
+      number:
+        min: 0
+        max: 600
+        unit_of_measurement: Seconds
+
+  control_area:
+    name: Area to Control
+    required: false
+    advanced: true
+    selector:
+      area:
+        entity:
+          domain: light
+
 sequence:
   - parallel:
       - repeat:

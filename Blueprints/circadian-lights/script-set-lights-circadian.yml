@@ -1,148 +1,407 @@
 blueprint:
-  name: "Set Circadian Lights State"
-  description: "This script sets a group of lights to a set state based on the selected circadian scene."
+  name: Set Circadian Lights State
+  description:
+    This script sets a group of lights to a set state based on the selected
+    circadian scene.
   domain: script
-  author: "Cody James"
-
+  author: Cody James
   input:
+    control_area:
+      name: Area to control
+      selector:
+        area:
+          entity:
+            domain: light
+    circadian_scene_selector:
+      name: Circadian Scene Selector
+      description: The input_select to use for setting the current circadian scene.
+      default: input_select.circadian_scene
+      selector:
+        entity:
+          domain: input_select
+    holiday_sensor:
+      name: Holiday Sensor
+      description: The sensor that shows the current/upcomming holiday
+      default: sensor.holiday_wled_scene
+      selector:
+        entity:
+          domain: sensor
+
     lifx_color_1000_bulbs:
-      name: "LIFX Color 1000 Bulbs"
-      description: "Select the bulbs to effect."
-      default: {}
+      name: LIFX Color 1000 Bulbs
+      description: Select the bulbs to effect.
+      default: ""
       selector:
         device:
-          filter:
-            - model: "A19 US"
+          model: LIFX A19 US
           multiple: true
+
     lifx_br30_bulbs:
-      name: "LIFX BR30 Bulbs"
-      description: "Select the bulbs to effect."
-      default: {}
+      name: LIFX BR30 Bulbs
+      description: Select the bulbs to effect.
+      default: ""
       selector:
         device:
-          filter:
-            - model: "BR30"
+          model: LIFX BR30
           multiple: true
 
     lifx_mini_color_bulbs:
-      name: "Mini Color Bulbs"
-      description: "Select the bulbs to effect."
-      default: {}
+      name: Mini Color Bulbs
+      description: Select the bulbs to effect.
+      default: ""
       selector:
         device:
-          filter:
-            - model: "Color"
+          model: LIFX Color
           multiple: true
 
     lifx_mini_ctt_bulbs:
-      name: "Mini CTT Bulbs"
-      description: "Select the bulbs to effect."
-      default: {}
+      name: Mini CTT Bulbs
+      description: Select the bulbs to effect.
+      default: ""
       selector:
         device:
-          filter:
-            - model: "Mini White to Warm"
+          model: LIFX Mini White to Warm
           multiple: true
+
     hue_gu10_bulbs:
-      name: "Hue GU10 Bulbs"
-      description: "Select the bulbs to effect."
-      default: {}
+      name: Hue GU10 Bulbs
+      description: Select the bulbs to effect.
+      default: ""
       selector:
         device:
-          filter:
-            - model: "LTG001"
+          model: LTG001
           multiple: true
-    other_actions:
-      name: "Other Actions"
-      default: {}
+
+    xiaomi_desk_lamps:
+      name: Xiaomi Desk Lamps (MJTD01SYL)
+      description: Select the lamps to effect.
+      default: ""
       selector:
-        action:
+        device:
+          entity:
+            integration: "esphome"
+            domain: light
+          multiple: true
+
+    always_actions:
+      name: Always Run Actions
+      description: Actions execute on every run
+      default:
+        - stop: ""
+      selector:
+        action: {}
+
+    morning_actions:
+      name: Morning Actions
+      description: Action to run when the Morning scene is selected
+      default:
+        - stop: ""
+      selector:
+        action: {}
+
+    evening_actions:
+      name: Evening Actions
+      description: Action to run when the evening scene is selected
+      default:
+        - stop: ""
+      selector:
+        action: {}
+
+    night_actions:
+      name: Night Actions
+      description: Action to run when the night scene is selected
+      default:
+        - stop: ""
+      selector:
+        action: {}
+
+    bs1_actions:
+      name: Bed Stage One Actions
+      description: Action to run when the bed stage one scene is selected
+      default:
+        - stop: ""
+      selector:
+        action: {}
+
+    bs2_actions:
+      name: Bed Stage Two Actions
+      description: Action to run when the bed stage two scene is selected
+      default:
+        - stop: ""
+      selector:
+        action: {}
+
+    bs3_actions:
+      name: Bed Stage Three Actions
+      description: Action to run when the bed stage three scene is selected
+      default:
+        - stop: ""
+      selector:
+        action: {}
+  source_url: https://github.com/codyjamestechnical/Home-Assistant/blob/main/Blueprints/circadian-lights/script-set-lights-circadian.yml
+
 variables:
-    light_presets:
-      lifx_color-1000:
-        #Kelvin
-        kelvin_morning: 9000
-        kelvin_eventing: 4000
-        kelvin_night: 2500
-        kelvin_bs1: 1900
-        kelvin_bs2: 1900
-        kelvin_bs3: 1500
+  scene_selector: !input circadian_scene_selector
+  scene: "{{ states(scene_selector) }}"
+  holiday_sensor: !input holiday_sensor
+  holiday: "{{states(holiday_sensor)}}"
+  transition: 2
+  always_actions: !input always_actions
+  control_area: !input control_area
+  wled_preset_entities: |
+    {% set selects = namespace(normal=[], holiday=[]) %}
 
-        #Brightness
-        brightness_morning: 80
-        brightness_eventing: 80
-        brightness_night: 60
-        brightness_bs1: 30
-        brightness_bs2: 10
-        brightness_bs3: 1
+    {% for entity in expand(area_entities(control_area)) | selectattr('domain','eq','select') | selectattr('entity_id','contains','preset') %}      
+      {% if is_device_attr(entity.entity_id, 'manufacturer', 'WLED')   %}
 
-      lifx_br30:
-        #Kelvin
-        kelvin_morning: 9000
-        kelvin_eventing: 4000
-        kelvin_night: 2500
-        kelvin_bs1: 1900
-        kelvin_bs2: 1900
-        kelvin_bs3: 1500
+        {% if (state_attr(entity.entity_id,"options") | contains(holiday)) and (scene == "Evening" or scene == "Night") %}
+          {% set selects.holiday = selects.holiday + [entity.entity_id] %}
+          {% continue %}
+        {% endif %}
 
-        #Brightness
-        brightness_morning: 100
-        brightness_eventing: 80
-        brightness_night: 70
-        brightness_bs1: 40
-        brightness_bs2: 15
-        brightness_bs3: 1
+        {% if (state_attr(entity.entity_id,"options") | contains(scene)) %}
+          {% set selects.normal = selects.normal + [entity.entity_id] %}
+        {%endif%}
 
-      lifx_mini-color:
-        #Kelvin
-        kelvin_morning: 9000
-        kelvin_eventing: 4000
-        kelvin_night: 2500
-        kelvin_bs1: 1900
-        kelvin_bs2: 1900
-        kelvin_bs3: 1500
-
-        #Brightness
-        brightness_morning: 100
-        brightness_eventing: 100
-        brightness_night: 100
-        brightness_bs1: 50
-        brightness_bs2: 25
-        brightness_bs3: 1
-
-      lifx_mini-ctt:
-        #Kelvin
-        kelvin_morning: 5700
-        kelvin_eventing: 4000
-        kelvin_night: 3000
-        kelvin_bs1: 2400
-        kelvin_bs2: 2400
-        kelvin_bs3: 2400
-
-        #Brightness
-        brightness_morning: 100
-        brightness_eventing: 100
-        brightness_night: 100
-        brightness_bs1: 60
-        brightness_bs2: 30
-        brightness_bs3: 1
-
-      hue_gu10:
-        #Kelvin
-        kelvin_morning: 5700
-        kelvin_eventing: 4000
-        kelvin_night: 3000
-        kelvin_bs1: 2400
-        kelvin_bs2: 2400
-        kelvin_bs3: 2400
-
-        #Brightness
-        brightness_morning: 100
-        brightness_eventing: 100
-        brightness_night: 100
-        brightness_bs1: 78
-        brightness_bs2: 39
-        brightness_bs3: 1
+      {%endif%}
+    {%endfor%}
+    { 
+      "normal": {{ selects.normal | list}},
+      "holiday": {{ selects.holiday | list }}
+    }
 
 sequence:
-  "{{!input other_ations}}"
+  - parallel:
+      - repeat:
+          for_each:
+            ### LIFX COLOR 1000 ###
+            - lights: !input lifx_color_1000_bulbs
+              kelvin:
+                morning: 9000
+                evening: 4000
+                night: 2500
+                bed_stage_one: 1900
+                bed_stage_two: 1900
+                bed_stage_three: 1500
+              brightness:
+                morning: 80
+                evening: 80
+                night: 60
+                bed_stage_one: 30
+                bed_stage_two: 10
+                bed_stage_three: 1
+
+              ### LIFX BR30 ###
+            - lights: !input lifx_br30_bulbs
+              kelvin:
+                morning: 9000
+                evening: 4000
+                night: 2500
+                bed_stage_one: 1900
+                bed_stage_two: 1900
+                bed_stage_three: 1500
+              brightness:
+                morning: 100
+                evening: 80
+                night: 70
+                bed_stage_one: 40
+                bed_stage_two: 15
+                bed_stage_three: 1
+
+              ### LIFX MINI COLOR ###
+            - lights: !input lifx_mini_color_bulbs
+              kelvin:
+                morning: 9000
+                evening: 4000
+                night: 2500
+                bed_stage_one: 1900
+                bed_stage_two: 1900
+                bed_stage_three: 1500
+              brightness:
+                morning: 100
+                evening: 100
+                night: 100
+                bed_stage_one: 50
+                bed_stage_two: 25
+                bed_stage_three: 1
+
+              ### LIFX MINI CTT ###
+            - lghts: !input lifx_mini_ctt_bulbs
+              kelvin:
+                morning: 5700
+                evening: 4000
+                night: 3000
+                bed_stage_one: 2400
+                bed_stage_two: 2400
+                bed_stage_three: 2400
+              brightness:
+                morning: 100
+                evening: 100
+                night: 100
+                bed_stage_one: 60
+                bed_stage_two: 30
+                bed_stage_three: 1
+
+              ### HUE GU10 ###
+            - lights: !input hue_gu10_bulbs
+              kelvin:
+                morning: 5700
+                evening: 4000
+                night: 3000
+                bed_stage_one: 2400
+                bed_stage_two: 2400
+                bed_stage_three: 2400
+              brightness:
+                morning: 100
+                evening: 100
+                night: 100
+                bed_stage_one: 78
+                bed_stage_two: 39
+                bed_stage_three: 1
+
+            ### XIAOMI DESK LIGHT (MJTD01SYL) ###
+            - lights: !input xiaomi_desk_lamps
+              kelvin:
+                morning: 6500
+                evening: 4000
+                night: 3000
+                bed_stage_one: 2400
+                bed_stage_two: 2400
+                bed_stage_three: 2400
+              brightness:
+                morning: 100
+                evening: 100
+                night: 80
+                bed_stage_one: 50
+                bed_stage_two: 25
+                bed_stage_three: 10
+          sequence:
+            - condition: "{{repeat.item.lights | length > 0}}"
+            - choose:
+                - conditions: >
+                    {{
+                          repeat.item.kelvin is defined 
+                      and repeat.item.kelvin[(scene | slugify('_')) ] is defined
+                      and repeat.item.brightness is defined 
+                      and repeat.item.brightness[(scene | slugify('_')) ] is defined 
+                    }}
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: |
+                          {% from 'entity_filters.jinja' import find_lights_from_devices_list %}
+                          {{ find_lights_from_devices_list(repeat.item.lights) }}
+                      data:
+                        brightness_pct: "{{ repeat.item.brightness[ (scene | slugify('_')) ] | int }}"
+                        transition: "{{ transition }}"
+                        color_temp_kelvin: "{{ repeat.item.kelvin[ (scene | slugify('_')) ] | int }}"
+                - conditions: >
+                    {{ 
+                          repeat.item.xy_color is defined 
+                      and repeat.item.xy_color[(scene | slugify('_')) ] is defined 
+                      and repeat.item.brightness is defined 
+                      and repeat.item.brightness[(scene | slugify('_')) ] is defined
+                    }}
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: |
+                          {% from 'entity_filters.jinja' import find_lights_from_devices_list%}
+                          {{ find_lights_from_devices_list(repeat.item.lights) }}
+                      data:
+                        brightness_pct: "{{ repeat.item.brightness[ (scene | slugify('_')) ] | int }}"
+                        transition: "{{ transition }}"
+                        xy_color: "{{ repeat.item.xy_color[ (scene | slugify('_')) ] | int }}"
+                - conditions: >
+                    {{ 
+                          repeat.item.brightness is defined 
+                      and repeat.item.brightness[(scene | slugify('_')) ] is defined
+                    }}
+                  sequence:
+                    - service: light.turn_on
+                      target:
+                        entity_id: |
+                          {% from 'entity_filters.jinja' import find_lights_from_devices_list %}
+                          {{ find_lights_from_devices_list(repeat.item.lights) }}
+                      data:
+                        brightness_pct: "{{ repeat.item.brightness[ (scene | slugify('_')) ] | int }}"
+                        transition: "{{ transition }}"
+              default:
+                - service: system_log.write
+                  data:
+                    level: error
+                    message: "ERROR: Circadian Light Script - {{control_area}} light preset has no defined brightness! Circadian presets require brightness to be specified"
+
+      #### SET WLED LIGHTS NORMAL ####
+      - if:
+          - "{{ wled_preset_entities.normal | length > 0 }}"
+        then:
+          - service: select.select_option
+            continue_on_error: true
+            target:
+              entity_id: |
+                {{ wled_preset_entities.normal | list }}
+            data:
+              option: "{{ scene }}"
+
+      #### SET WLED LIGHTS HOLIDAY ####
+      - if:
+          - "{{ wled_preset_entities.holiday | length > 0 }}"
+        then:
+          - service: select.select_option
+            continue_on_error: true
+            target:
+              entity_id: |
+                {{ wled_preset_entities.holiday | list }}
+            data:
+              option: "{{ holiday }}"
+
+      #### RUN ALWAYS ACTIONS ####
+      - sequence: !input always_actions
+
+      # Choose the action that matches the scene
+      - choose:
+          #### RUN MORGING ACTIONS ####
+          - conditions: >
+              {{ scene == 'Morning' }}
+            sequence: !input morning_actions
+
+            #### RUN EVENING ACTIONS ####
+          - conditions: >
+              {{ scene == "Evening" }}
+            sequence: !input evening_actions
+
+            #### RUN NIGHT ACTIONS ####
+          - conditions: >
+              {{ scene == "Night" }}
+            sequence: !input night_actions
+
+            #### RUN BED STAGE ONE ACTIONS ####
+          - conditions: >
+              {{ scene == "Bed Stage One" }}
+            sequence: !input bs1_actions
+
+            #### RUN BED STAGE TWO ACTIONS ####
+          - conditions: >
+              {{ scene == "Bed Stage Two" }}
+            sequence: !input bs2_actions
+
+            #### RUN BED STAGE THREE ACTIONS ####
+          - conditions: >
+              {{ scene == "Bed Stage Three" }}
+            sequence: !input bs3_actions
+#### MACROS USED ####
+
+### FIND_LIGHTS_FROM_DEVICES_LIST ###
+
+# {# Go through a list of device IDs and output a list of light entities #}
+# {# Input a list of device IDs #}
+# {% macro find_lights_from_devices_list(devices)%}
+#     {% set data = namespace(lights=[]) %}
+#         {% for device in devices %}
+#             {% for entity in expand(device_entities(device)) | selectattr('domain','eq','light')  %}
+#                 {% set data.lights = data.lights + [entity.entity_id] %}
+#             {%endfor%}
+#         {%endfor%}
+#     {{ data.lights | list }}
+# {% endmacro %}

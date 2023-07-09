@@ -1,0 +1,31 @@
+blueprint:
+    name: Circadian Rythm Automation
+    description: This automation changes the circadian scene throughout the day to match the circadian rythm.
+    domain: automation
+
+    input:
+        circadian_scene_selector:
+            name: Circadian Scene Selector
+            description: The input_select to use for setting the current circadian scene.
+            default: input_select.circadian_scene
+            selector:
+                entity:
+                    domain: input_select
+
+        bed_stage_timer:
+            name: Bed Stage Timer
+            description: The timer that triggers bed stages 2-3 after the first bed stage is triggered.
+            default: "timer.bed_stage"
+            selsctor:
+                entity:
+                    domain: timer
+
+        morning_timer:
+            name: Morning Timer
+            description: The timer that triggers the switch from the morning scene to the evening scene.
+            default: "timer.morning"
+            selector:
+                entity:
+                    domain: timer
+        
+        

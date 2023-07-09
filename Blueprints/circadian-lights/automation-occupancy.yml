@@ -10,44 +10,222 @@ blueprint:
         entity:
           domain: binary_sensor
           device_class: occupancy
+          multiple: false
+
+    circadian_scene_selector:
+      name: Circadian Scene Selector
+      description: The input_select to use for setting the current circadian scene.
+      default: input_select.circadian_scene
+      selector:
+        entity:
+          domain: input_select
+
+    light_scene_hold_toggle:
+      name: Lighting Scene Hold Toggle Switch
+      description: The switch to use to tell home assistant to hold the current lighting state in the room until timer runs out after unoccupied.
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: false
+
+    light_scene_hold_timer:
+      name: Lighting Scene Hold Timer
+      description: The timer that is started when the lights are turned off to decide when to set the defaults or reactivate the users last scene.
+      selector:
+        entity:
+          domain: timer
+          multiple: false
+
+    auto_light_lockout:
+      name: Auto Light Lockout Toggle
+      description: The toggle switch that locks out all automatic lighting automations and prevents any light from turning on.
+      default: "input_boolean.auto_light_lock"
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: false
+
+    sleeping_boolean:
+      name: Sleeping Toggle Switch
+      description: If defined, this switch will stop the room lights from coming on while its enabled
+      default: ""
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: false
+
     area:
-      name: Area 
+      name: Area
       description: The area to control
       selector:
         area:
           entity:
             domain: light
+          multiple: false
+
     script:
       name: Turn on script
       selector:
         entity:
           domain: script
+          multiple: false
 
+  source_url: https://github.com/codyjamestechnical/Home-Assistant/blob/main/Blueprints/circadian-lights/automation-occupancy.yml
+
+variables:
+  area_id: !input area
+  sleeping_boolean: !input sleeping_boolean
+  sleeping: "{{ is_state(sleeping_boolean, 'on')  }}"
+  light_scene_hold_timer: !input light_scene_hold_timer
+  light_scene_hold: "{{ not is_state(light_scene_hold_timer, 'idle') }}"
+
+mode: parallel
 trigger:
   - platform: state
     entity_id: !input occupancy_sensor
-    id: "detected"
-    from: 'off'
-    to: 'on'
+    id: detected
+    from: "off"
+    to: "on"
 
   - platform: state
     entity_id: !input occupancy_sensor
-    id: "not_detected"
-    from: 'on'
-    to: 'off'
+    id: not_detected
+    from: "on"
+    to: "off"
+    for:
+      seconds: 5
 
+  - platform: state
+    id: circadian_scene_selector_change
+    entity_id: !input circadian_scene_selector
+
+  - platform: event
+    event_type:
+      - timer.finished
+      - timer.cancel
+    id: light_scene_hold_timer_ended
+    event_data:
+      entity_id: !input light_scene_hold_timer
 action:
+  - condition: "{{ not sleeping }}"
+
   - choose:
+      ### Occupancy Detected
       - conditions:
           - condition: trigger
-            id: "detected"
+            id: detected
+
+          - condition: state
+            entity_id: !input auto_light_lockout
+            state: "off"
+
+          - not:
+              - condition: state
+                entity_id: !input circadian_scene_selector
+                state: "Morning Rise"
         sequence:
-          - service: script.turn_on
-            entity_id: !input script
+          - if:
+              # If the scene hold toggle is on
+              - condition: state
+                entity_id: !input light_scene_hold_toggle
+                state: "on"
+
+              # if ther is a scene with the correct name in existence
+              - "{{ state_attr('scene.light_restore_' + (area_name(area_id) | slugify('_')) ,'friendly_name') is not none }}"
+            then:
+              repeat:
+                count: 2
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id: "scene.light_restore_{{ area_name(area_id) | slugify('_') }}"
+                    data:
+                      transition: "{{ transition }}"
+                  - delay:
+                      seconds: 2
+            else:
+              - service: script.turn_on
+                entity_id: !input script
+
+      ### Occupancy NOT Detected
       - conditions:
-        - condition: trigger
-          id: "not_detected"
+          - condition: trigger
+            id: not_detected
+
+          - condition: state
+            entity_id: !input auto_light_lockout
+            state: "off"
+
+          - not:
+              - condition: state
+                entity_id: !input circadian_scene_selector
+                state: "Morning Rise"
         sequence:
+          - if:
+              # If the scene hold toggle is on
+              - condition: state
+                entity_id: !input light_scene_hold_toggle
+                state: "on"
+
+              # if any light is on
+              - condition: template
+                value_template: |
+                  {% from 'entity_filters.jinja' import boolean_area_lights_on %}
+                  {{ boolean_area_lights_on(area_name(area_id)) }}
+
+            then:
+              - service: scene.create
+                data:
+                  scene_id: "light_restore_{{ area_name(area_id) | slugify('_') }}"
+                  snapshot_entities: |
+                    {% from 'entity_filters.jinja' import filter_area_entities_domain_hidden %}
+                    {{ filter_area_entities_domain_hidden(area_name(area_id)) }}
+
+              - service: timer.start
+                entity_id: !input light_scene_hold_timer
+
           - service: light.turn_off
             target:
-              area_id: !input area
+              entity_id: |
+                {% from 'entity_filters.jinja' import filter_area_entities_domain_hidden %}
+                {{ filter_area_entities_domain_hidden(area_name(area_id)) }}
+
+      ### Circadian Scene Selector Change
+      - conditions:
+          - condition: trigger
+            id: circadian_scene_selector_change
+
+          # if auto light lockout is off
+          - condition: state
+            entity_id: !input auto_light_lockout
+            state: "off"
+
+          # If the scene hold toggle is on
+          - condition: state
+            entity_id: !input light_scene_hold_toggle
+            state: "off"
+
+        sequence:
+          - if:
+              - condition: state
+                entity_id: !input circadian_scene_selector
+                state: "Morning Rise"
+            then:
+              - service: script.turn_on
+                data:
+                  entity_id: !input script
+            else:
+              - service: script.turn_on
+                data:
+                  entity_id: !input script
+                  variables:
+                    transition: 300
+                    turn_on: false
+
+      ### Scene Hold Timer Ended
+      - conditions:
+          - condition: trigger
+            id: light_scene_hold_timer_ended
+        sequence:
+          - service: input_boolean.turn_off
+            entity_id: !input light_scene_hold_toggle

@@ -1,17 +1,17 @@
 blueprint:
-  name: Set Circadian Lights State
-  description:
-    This script sets a group of lights to a set state based on the selected
-    circadian scene.
-  domain: script
-  author: Cody James
+  name: Occupancy Light Control
+  description: Control room lights based on occupancy
+  domain: automation
   input:
-    control_area:
-      name: Area to control
+    occupancy_sensor:
+      name: Occupancy Sensor
+      description: The occupancy sensor to use for the room
       selector:
-        area:
-          entity:
-            domain: light
+        entity:
+          domain: binary_sensor
+          device_class: occupancy
+          multiple: false
+
     circadian_scene_selector:
       name: Circadian Scene Selector
       description: The input_select to use for setting the current circadian scene.
@@ -19,424 +19,213 @@ blueprint:
       selector:
         entity:
           domain: input_select
-    holiday_sensor:
-      name: Holiday Sensor
-      description: The sensor that shows the current/upcomming holiday
-      default: sensor.holiday_wled_scene
+
+    light_scene_hold_toggle:
+      name: Lighting Scene Hold Toggle Switch
+      description: The switch to use to tell home assistant to hold the current lighting state in the room until timer runs out after unoccupied.
       selector:
         entity:
-          domain: sensor
+          domain: input_boolean
+          multiple: false
 
-    lifx_color_1000_bulbs:
-      name: LIFX Color 1000 Bulbs
-      description: Select the bulbs to effect.
+    light_scene_hold_timer:
+      name: Lighting Scene Hold Timer
+      description: The timer that is started when the lights are turned off to decide when to set the defaults or reactivate the users last scene.
+      selector:
+        entity:
+          domain: timer
+          multiple: false
+
+    auto_light_lockout:
+      name: Auto Light Lockout Toggle
+      description: The toggle switch that locks out all automatic lighting automations and prevents any light from turning on.
+      default: "input_boolean.auto_light_lock"
+      selector:
+        entity:
+          domain: input_boolean
+          multiple: false
+
+    sleeping_boolean:
+      name: Sleeping Toggle Switch
+      description: If defined, this switch will stop the room lights from coming on while its enabled
       default: ""
       selector:
-        device:
-          model: LIFX A19 US
-          multiple: true
+        entity:
+          domain: input_boolean
+          multiple: false
 
-    lifx_br30_bulbs:
-      name: LIFX BR30 Bulbs
-      description: Select the bulbs to effect.
-      default: ""
+    area:
+      name: Area
+      description: The area to control
       selector:
-        device:
-          model: LIFX BR30
-          multiple: true
-
-    lifx_mini_color_bulbs:
-      name: Mini Color Bulbs
-      description: Select the bulbs to effect.
-      default: ""
-      selector:
-        device:
-          model: LIFX Color
-          multiple: true
-
-    lifx_mini_ctt_bulbs:
-      name: Mini CTT Bulbs
-      description: Select the bulbs to effect.
-      default: ""
-      selector:
-        device:
-          model: LIFX Mini White to Warm
-          multiple: true
-
-    hue_gu10_bulbs:
-      name: Hue GU10 Bulbs
-      description: Select the bulbs to effect.
-      default: ""
-      selector:
-        device:
-          model: LTG001
-          multiple: true
-
-    xiaomi_desk_lamps:
-      name: Xiaomi Desk Lamps (MJTD01SYL)
-      description: Select the lamps to effect.
-      default: ""
-      selector:
-        device:
+        area:
           entity:
-            integration: "esphome"
             domain: light
-          multiple: true
+          multiple: false
 
-    always_actions:
-      name: Always Run Actions
-      description: Actions execute on every run
-      default:
-        - stop: ""
+    script:
+      name: Turn on script
       selector:
-        action: {}
+        entity:
+          domain: script
+          multiple: false
 
-    morning_actions:
-      name: Morning Actions
-      description: Action to run when the Morning scene is selected
-      default:
-        - stop: ""
-      selector:
-        action: {}
-
-    evening_actions:
-      name: Evening Actions
-      description: Action to run when the evening scene is selected
-      default:
-        - stop: ""
-      selector:
-        action: {}
-
-    night_actions:
-      name: Night Actions
-      description: Action to run when the night scene is selected
-      default:
-        - stop: ""
-      selector:
-        action: {}
-
-    bs1_actions:
-      name: Bed Stage One Actions
-      description: Action to run when the bed stage one scene is selected
-      default:
-        - stop: ""
-      selector:
-        action: {}
-
-    bs2_actions:
-      name: Bed Stage Two Actions
-      description: Action to run when the bed stage two scene is selected
-      default:
-        - stop: ""
-      selector:
-        action: {}
-
-    bs3_actions:
-      name: Bed Stage Three Actions
-      description: Action to run when the bed stage three scene is selected
-      default:
-        - stop: ""
-      selector:
-        action: {}
-  source_url: https://github.com/codyjamestechnical/Home-Assistant/blob/main/Blueprints/circadian-lights/script-set-lights-circadian.yml
+  source_url: https://github.com/codyjamestechnical/Home-Assistant/blob/main/Blueprints/circadian-lights/automation-occupancy.yml
 
 variables:
-  scene_selector: !input circadian_scene_selector
-  scene: "{{ states(scene_selector) }}"
-  holiday_sensor: !input holiday_sensor
-  holiday: "{{states(holiday_sensor)}}"
-  transition: 2
-  always_actions: !input always_actions
-  control_area: !input control_area
-  wled_preset_entities: |
-    {% set selects = namespace(normal=[], holiday=[]) %}
+  area_id: !input area
+  sleeping_boolean: !input sleeping_boolean
+  sleeping: "{{ is_state(sleeping_boolean, 'on')  }}"
+  light_scene_hold_timer: !input light_scene_hold_timer
+  light_scene_hold: "{{ not is_state(light_scene_hold_timer, 'idle') }}"
 
-    {% for entity in expand(area_entities(control_area)) | selectattr('domain','eq','select') | selectattr('entity_id','contains','preset') %}      
-      {% if is_device_attr(entity.entity_id, 'manufacturer', 'WLED')   %}
+mode: parallel
+trigger:
+  - platform: state
+    entity_id: !input occupancy_sensor
+    id: detected
+    from: "off"
+    to: "on"
 
-        {% if (state_attr(entity.entity_id,"options") | contains(holiday)) and (scene == "Evening" or scene == "Night") %}
-          {% set selects.holiday = selects.holiday + [entity.entity_id] %}
-          {% continue %}
-        {% endif %}
+  - platform: state
+    entity_id: !input occupancy_sensor
+    id: not_detected
+    from: "on"
+    to: "off"
+    for:
+      seconds: 5
 
-        {% if (state_attr(entity.entity_id,"options") | contains(scene)) %}
-          {% set selects.normal = selects.normal + [entity.entity_id] %}
-        {%endif%}
+  - platform: state
+    id: circadian_scene_selector_change
+    entity_id: !input circadian_scene_selector
 
-      {%endif%}
-    {%endfor%}
-    { 
-      "normal": {{ selects.normal | list}},
-      "holiday": {{ selects.holiday | list }}
-    }
+  - platform: event
+    event_type:
+      - timer.finished
+      - timer.cancel
+    id: light_scene_hold_timer_ended
+    event_data:
+      entity_id: !input light_scene_hold_timer
+action:
+  - condition: "{{ not sleeping }}"
 
-fields:
-  scene:
-    name: Scene to Set
-    description: The scene to set in the room.
-    required: false
-    advanced: true
-    selector:
-      select:
-        options:
-          - Morning
-          - Evening
-          - Night
-          - Bed Stage One
-          - Bed Stage Two
-          - Bed Stage Three
+  - choose:
+      ### Occupancy Detected
+      - conditions:
+          - condition: trigger
+            id: detected
 
-  transition:
-    name: Transition Time in Seconds
-    default: 2
-    advanced: false
-    selector:
-      number:
-        min: 0
-        max: 600
-        unit_of_measurement: Seconds
+          - condition: state
+            entity_id: !input auto_light_lockout
+            state: "off"
 
-  control_area:
-    name: Area to Control
-    required: false
-    advanced: true
-    selector:
-      area:
-        entity:
-          domain: light
+          - not:
+              - condition: state
+                entity_id: !input circadian_scene_selector
+                state: "Morning Rise"
+        sequence:
+          - if:
+              # If the scene hold toggle is on
+              - condition: state
+                entity_id: !input light_scene_hold_toggle
+                state: "on"
 
-sequence:
-  - parallel:
-      - repeat:
-          for_each:
-            ### LIFX COLOR 1000 ###
-            - lights: !input lifx_color_1000_bulbs
-              kelvin:
-                morning: 9000
-                evening: 4000
-                night: 2500
-                bed_stage_one: 1900
-                bed_stage_two: 1900
-                bed_stage_three: 1500
-              brightness:
-                morning: 80
-                evening: 80
-                night: 60
-                bed_stage_one: 30
-                bed_stage_two: 10
-                bed_stage_three: 1
+              # if ther is a scene with the correct name in existence
+              - "{{ state_attr('scene.light_restore_' + (area_name(area_id) | slugify('_')) ,'friendly_name') is not none }}"
+            then:
+              repeat:
+                count: 2
+                sequence:
+                  - service: scene.turn_on
+                    target:
+                      entity_id: "scene.light_restore_{{ area_name(area_id) | slugify('_') }}"
+                    data:
+                      transition: "{{ transition }}"
+                  - delay:
+                      seconds: 2
+            else:
+              - service: script.turn_on
+                entity_id: !input script
 
-              ### LIFX BR30 ###
-            - lights: !input lifx_br30_bulbs
-              kelvin:
-                morning: 9000
-                evening: 4000
-                night: 2500
-                bed_stage_one: 1900
-                bed_stage_two: 1900
-                bed_stage_three: 1500
-              brightness:
-                morning: 100
-                evening: 80
-                night: 70
-                bed_stage_one: 40
-                bed_stage_two: 15
-                bed_stage_three: 1
+      ### Occupancy NOT Detected
+      - conditions:
+          - condition: trigger
+            id: not_detected
 
-              ### LIFX MINI COLOR ###
-            - lights: !input lifx_mini_color_bulbs
-              kelvin:
-                morning: 9000
-                evening: 4000
-                night: 2500
-                bed_stage_one: 1900
-                bed_stage_two: 1900
-                bed_stage_three: 1500
-              brightness:
-                morning: 100
-                evening: 100
-                night: 100
-                bed_stage_one: 50
-                bed_stage_two: 25
-                bed_stage_three: 1
+          - condition: state
+            entity_id: !input auto_light_lockout
+            state: "off"
 
-              ### LIFX MINI CTT ###
-            - lghts: !input lifx_mini_ctt_bulbs
-              kelvin:
-                morning: 5700
-                evening: 4000
-                night: 3000
-                bed_stage_one: 2400
-                bed_stage_two: 2400
-                bed_stage_three: 2400
-              brightness:
-                morning: 100
-                evening: 100
-                night: 100
-                bed_stage_one: 60
-                bed_stage_two: 30
-                bed_stage_three: 1
+          - not:
+              - condition: state
+                entity_id: !input circadian_scene_selector
+                state: "Morning Rise"
+        sequence:
+          - if:
+              # If the scene hold toggle is on
+              - condition: state
+                entity_id: !input light_scene_hold_toggle
+                state: "on"
 
-              ### HUE GU10 ###
-            - lights: !input hue_gu10_bulbs
-              kelvin:
-                morning: 5700
-                evening: 4000
-                night: 3000
-                bed_stage_one: 2400
-                bed_stage_two: 2400
-                bed_stage_three: 2400
-              brightness:
-                morning: 100
-                evening: 100
-                night: 100
-                bed_stage_one: 78
-                bed_stage_two: 39
-                bed_stage_three: 1
+              # if any light is on
+              - condition: template
+                value_template: |
+                  {% from 'entity_filters.jinja' import boolean_area_lights_on %}
+                  {{ boolean_area_lights_on(area_name(area_id)) }}
 
-            ### XIAOMI DESK LIGHT (MJTD01SYL) ###
-            - lights: !input xiaomi_desk_lamps
-              kelvin:
-                morning: 6500
-                evening: 4000
-                night: 3000
-                bed_stage_one: 2400
-                bed_stage_two: 2400
-                bed_stage_three: 2400
-              brightness:
-                morning: 100
-                evening: 100
-                night: 80
-                bed_stage_one: 50
-                bed_stage_two: 25
-                bed_stage_three: 10
-          sequence:
-            - condition: "{{repeat.item.lights | length > 0}}"
-            - choose:
-                - conditions: >
-                    {{
-                          repeat.item.kelvin is defined 
-                      and repeat.item.kelvin[(scene | slugify('_')) ] is defined
-                      and repeat.item.brightness is defined 
-                      and repeat.item.brightness[(scene | slugify('_')) ] is defined 
-                    }}
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: |
-                          {% from 'entity_filters.jinja' import find_lights_from_devices_list %}
-                          {{ find_lights_from_devices_list(repeat.item.lights) }}
-                      data:
-                        brightness_pct: "{{ repeat.item.brightness[ (scene | slugify('_')) ] | int }}"
-                        transition: "{{ transition }}"
-                        color_temp_kelvin: "{{ repeat.item.kelvin[ (scene | slugify('_')) ] | int }}"
-                - conditions: >
-                    {{ 
-                          repeat.item.xy_color is defined 
-                      and repeat.item.xy_color[(scene | slugify('_')) ] is defined 
-                      and repeat.item.brightness is defined 
-                      and repeat.item.brightness[(scene | slugify('_')) ] is defined
-                    }}
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: |
-                          {% from 'entity_filters.jinja' import find_lights_from_devices_list%}
-                          {{ find_lights_from_devices_list(repeat.item.lights) }}
-                      data:
-                        brightness_pct: "{{ repeat.item.brightness[ (scene | slugify('_')) ] | int }}"
-                        transition: "{{ transition }}"
-                        xy_color: "{{ repeat.item.xy_color[ (scene | slugify('_')) ] | int }}"
-                - conditions: >
-                    {{ 
-                          repeat.item.brightness is defined 
-                      and repeat.item.brightness[(scene | slugify('_')) ] is defined
-                    }}
-                  sequence:
-                    - service: light.turn_on
-                      target:
-                        entity_id: |
-                          {% from 'entity_filters.jinja' import find_lights_from_devices_list %}
-                          {{ find_lights_from_devices_list(repeat.item.lights) }}
-                      data:
-                        brightness_pct: "{{ repeat.item.brightness[ (scene | slugify('_')) ] | int }}"
-                        transition: "{{ transition }}"
-              default:
-                - service: system_log.write
-                  data:
-                    level: error
-                    message: "ERROR: Circadian Light Script - {{control_area}} light preset has no defined brightness! Circadian presets require brightness to be specified"
+            then:
+              - service: scene.create
+                data:
+                  scene_id: "light_restore_{{ area_name(area_id) | slugify('_') }}"
+                  snapshot_entities: |
+                    {% from 'entity_filters.jinja' import filter_area_entities_domain_hidden %}
+                    {{ filter_area_entities_domain_hidden(area_name(area_id)) }}
 
-      #### SET WLED LIGHTS NORMAL ####
-      - if:
-          - "{{ wled_preset_entities.normal | length > 0 }}"
-        then:
-          - service: select.select_option
-            continue_on_error: true
+              - service: timer.start
+                entity_id: !input light_scene_hold_timer
+
+          - service: light.turn_off
             target:
               entity_id: |
-                {{ wled_preset_entities.normal | list }}
-            data:
-              option: "{{ scene }}"
+                {% from 'entity_filters.jinja' import filter_area_entities_domain_hidden %}
+                {{ filter_area_entities_domain_hidden(area_name(area_id)) }}
 
-      #### SET WLED LIGHTS HOLIDAY ####
-      - if:
-          - "{{ wled_preset_entities.holiday | length > 0 }}"
-        then:
-          - service: select.select_option
-            continue_on_error: true
-            target:
-              entity_id: |
-                {{ wled_preset_entities.holiday | list }}
-            data:
-              option: "{{ holiday }}"
+      ### Circadian Scene Selector Change
+      - conditions:
+          - condition: trigger
+            id: circadian_scene_selector_change
 
-      #### RUN ALWAYS ACTIONS ####
-      - sequence: !input always_actions
+          # if auto light lockout is off
+          - condition: state
+            entity_id: !input auto_light_lockout
+            state: "off"
 
-      # Choose the action that matches the scene
-      - choose:
-          #### RUN MORGING ACTIONS ####
-          - conditions: >
-              {{ scene == 'Morning' }}
-            sequence: !input morning_actions
+          # If the scene hold toggle is on
+          - condition: state
+            entity_id: !input light_scene_hold_toggle
+            state: "off"
 
-            #### RUN EVENING ACTIONS ####
-          - conditions: >
-              {{ scene == "Evening" }}
-            sequence: !input evening_actions
+        sequence:
+          - if:
+              - condition: state
+                entity_id: !input circadian_scene_selector
+                state: "Morning Rise"
+            then:
+              - service: script.turn_on
+                data:
+                  entity_id: !input script
+            else:
+              - service: script.turn_on
+                data:
+                  entity_id: !input script
+                  variables:
+                    transition: 300
+                    turn_on: false
 
-            #### RUN NIGHT ACTIONS ####
-          - conditions: >
-              {{ scene == "Night" }}
-            sequence: !input night_actions
-
-            #### RUN BED STAGE ONE ACTIONS ####
-          - conditions: >
-              {{ scene == "Bed Stage One" }}
-            sequence: !input bs1_actions
-
-            #### RUN BED STAGE TWO ACTIONS ####
-          - conditions: >
-              {{ scene == "Bed Stage Two" }}
-            sequence: !input bs2_actions
-
-            #### RUN BED STAGE THREE ACTIONS ####
-          - conditions: >
-              {{ scene == "Bed Stage Three" }}
-            sequence: !input bs3_actions
-#### MACROS USED ####
-
-### FIND_LIGHTS_FROM_DEVICES_LIST ###
-
-# {# Go through a list of device IDs and output a list of light entities #}
-# {# Input a list of device IDs #}
-# {% macro find_lights_from_devices_list(devices)%}
-#     {% set data = namespace(lights=[]) %}
-#         {% for device in devices %}
-#             {% for entity in expand(device_entities(device)) | selectattr('domain','eq','light')  %}
-#                 {% set data.lights = data.lights + [entity.entity_id] %}
-#             {%endfor%}
-#         {%endfor%}
-#     {{ data.lights | list }}
-# {% endmacro %}
+      ### Scene Hold Timer Ended
+      - conditions:
+          - condition: trigger
+            id: light_scene_hold_timer_ended
+        sequence:
+          - service: input_boolean.turn_off
+            entity_id: !input light_scene_hold_toggle

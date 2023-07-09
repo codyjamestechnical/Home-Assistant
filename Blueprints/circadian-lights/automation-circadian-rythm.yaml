@@ -16,7 +16,7 @@ blueprint:
             name: Bed Stage Timer
             description: The timer that triggers bed stages 2-3 after the first bed stage is triggered.
             default: "timer.bed_stage"
-            selsctor:
+            selector:
                 entity:
                     domain: timer
 
